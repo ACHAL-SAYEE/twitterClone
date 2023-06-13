@@ -55,7 +55,7 @@ app.post("/register/", async (request, response) => {
   const dbUser = await db.get(selectUserQuery);
   if (dbUser === undefined) {
     if (password.length < 6) {
-      response.status = 400;
+      response.status(400);
       response.send("Password is too short");
     } else {
       const createUserQuery = `
@@ -73,7 +73,7 @@ app.post("/register/", async (request, response) => {
       response.send(`User created successfully`);
     }
   } else {
-    response.status = 400;
+    response.status (400);
     response.send("User already exists");
   }
 });
@@ -100,18 +100,6 @@ app.post("/login", async (request, response) => {
   }
 });
 
-// app.get("/books/", authenticateToken, async (request, response) => {
-//   const getBooksQuery = `
-//    SELECT
-//     *
-//    FROM
-//     book
-//    ORDER BY
-//     book_id;`;
-//   const booksArray = await db.all(getBooksQuery);
-//   response.send(booksArray);
-// });
-
 app.get("/user/tweets/feed/", authenticateToken, async (request, response) => {
   try {
     const { username } = request;
@@ -126,7 +114,12 @@ app.get("/user/tweets/feed/", authenticateToken, async (request, response) => {
 ON T.following_user_id = tweet.user_id where T.username='${username}' ORDER BY Tweet.date_time DESC
 LIMIT 4;
     `;
-    const TweetsArray = await db.all(getTweetsQuery);
+    let TweetsArray = await db.all(getTweetsQuery);
+    TweetsArray = TweetsArray.map((tweet) => ({
+      username: tweet.username,
+      tweet: tweet.tweet,
+      dateTime: tweet.date_time,
+    }));
     response.send(TweetsArray);
   } catch (error) {
     console.error("Error retrieving tweets:", error);
@@ -150,7 +143,7 @@ app.get("/user/following", authenticateToken, async (request, response) => {
   response.send(TweetsArray);
 });
 
-app.get("/user/follower", authenticateToken, async (request, response) => {
+app.get("/user/followers", authenticateToken, async (request, response) => {
   const { username } = request;
   const getTweetsQuery = `
    SELECT
