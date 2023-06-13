@@ -73,7 +73,7 @@ app.post("/register/", async (request, response) => {
       response.send(`User created successfully`);
     }
   } else {
-    response.status (400);
+    response.status(400);
     response.send("User already exists");
   }
 });
@@ -132,7 +132,7 @@ app.get("/user/following", authenticateToken, async (request, response) => {
   const getTweetsQuery = `
    SELECT
     (
-       SELECT username
+       SELECT name
        FROM user
        WHERE user_id = follower.following_user_id
    ) as name  FROM (user INNER JOIN follower ON user.user_id=follower.follower_user_id) as T
@@ -148,7 +148,7 @@ app.get("/user/followers", authenticateToken, async (request, response) => {
   const getTweetsQuery = `
    SELECT
     (
-       SELECT username
+       SELECT name
        FROM user
        WHERE user_id = follower.follower_user_id
    ) as name  FROM (user INNER JOIN follower ON user.user_id=follower.following_user_id) as T
